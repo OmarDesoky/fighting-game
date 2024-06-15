@@ -7,6 +7,14 @@ canvas.height = 576
 c.fillRect(0, 0, canvas.width, canvas.height)
 
 const gravity = 0.7
+const GAMESTATE = {
+  initial: 0,
+  inQueue: 1,
+  inGame: 2,
+  endGame: 3,
+}
+
+var gameState = GAMESTATE.initial
 
 const background = new Sprite({
   position: {
@@ -25,7 +33,7 @@ const shop = new Sprite({
   scale: 2.75,
   framesMax: 6
 })
-
+ 
 const player = new Fighter({
   position: {
     x: 0,
@@ -35,6 +43,7 @@ const player = new Fighter({
     x: 0,
     y: 0
   },
+  jumps: 1,
   offset: {
     x: 0,
     y: 0
@@ -95,6 +104,7 @@ const enemy = new Fighter({
     x: 0,
     y: 0
   },
+  jumps: 1,
   color: 'blue',
   offset: {
     x: -50,
@@ -147,7 +157,7 @@ const enemy = new Fighter({
   }
 })
 
-console.log(player)
+
 
 const keys = {
   a: {
@@ -270,6 +280,7 @@ function animate() {
 animate()
 
 window.addEventListener('keydown', (event) => {
+  // if(gameState != GAMESTATE.inGame) return;
   if (!player.dead) {
     switch (event.key) {
       case 'd':
@@ -281,6 +292,8 @@ window.addEventListener('keydown', (event) => {
         player.lastKey = 'a'
         break
       case 'w':
+        if(player.jumps == 0) break
+        player.jumps=0;
         player.velocity.y = -20
         break
       case ' ':
@@ -300,6 +313,8 @@ window.addEventListener('keydown', (event) => {
         enemy.lastKey = 'ArrowLeft'
         break
       case 'ArrowUp':
+        if(enemy.jumps == 0) break
+        enemy.jumps=0;
         enemy.velocity.y = -20
         break
       case 'ArrowDown':
@@ -330,3 +345,32 @@ window.addEventListener('keyup', (event) => {
       break
   }
 })
+
+
+void findMatch() {
+  gameState = GAMESTATE.inGame;
+  const socket = new WebSocket('ws://example.com/socket');
+  
+  // Connection opened
+  socket.addEventListener('open', (event) => {
+      console.log('WebSocket connection opened:', event);
+      // You can send data to the server using socket.send()
+      socket.send('Hello Server!');
+  });
+
+  // Listen for messages
+  socket.addEventListener('message', (event) => {
+      console.log('Message from server:', event.data);
+      // Handle the received message
+  });
+
+  // Handle errors
+  socket.addEventListener('error', (event) => {
+      console.error('WebSocket error:', event);
+  });
+
+  // Connection closed
+  socket.addEventListener('close', (event) => {
+      console.log('WebSocket connection closed:', event);
+  });
+}

@@ -55,6 +55,7 @@ class Fighter extends Sprite {
   constructor({
     position,
     velocity,
+    jumps,
     color = 'red',
     imageSrc,
     scale = 1,
@@ -74,6 +75,7 @@ class Fighter extends Sprite {
     this.velocity = velocity
     this.width = 50
     this.height = 150
+    this.jumps= jumps
     this.lastKey
     this.attackBox = {
       position: {
@@ -108,19 +110,25 @@ class Fighter extends Sprite {
     this.attackBox.position.y = this.position.y + this.attackBox.offset.y
 
     // draw the attack box
-    // c.fillRect(
-    //   this.attackBox.position.x,
-    //   this.attackBox.position.y,
-    //   this.attackBox.width,
-    //   this.attackBox.height
-    // )
+    c.fillRect(
+      this.attackBox.position.x,
+      this.attackBox.position.y,
+      this.attackBox.width,
+      this.attackBox.height
+    )
 
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
 
+    // limited with boundary
+    this.position.x = Math.max(0, this.position.x)
+    this.position.x = Math.min(970, this.position.x)
+    
+
     // gravity function
     if (this.position.y + this.height + this.velocity.y >= canvas.height - 96) {
       this.velocity.y = 0
+      this.jumps = 1
       this.position.y = 330
     } else this.velocity.y += gravity
   }
